@@ -3,10 +3,9 @@ import emoji
 
 from localization import normal_char, caps_normal_char
 
-bot_token = "5785425617:AAE-IEiP-YjnysmJt4YZzEcnfouc1nPBJTY"
+bot_token = ""
 bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
-
 
 @dp.message_handler(commands=['start'])
 async def send_start(message: types.Message):
