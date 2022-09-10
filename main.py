@@ -3,9 +3,35 @@ import emoji
 
 from localization import normal_char, caps_normal_char
 
-bot_token = ""
+bot_token = "00000000:aaaaaaaaaaaaaaaa"
 bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
+admins_id = [00000000, 00000000]
+chat_report = 00000000
+command_chat = 00000000
+
+
+@dp.message_handler(commands=["гур"], commands_prefix="!")
+async def ban_user(message: types.Message):
+    if message.from_user.id in admins_id:
+        if not message.reply_to_message:
+            usernamee = message.text.split()[1]
+
+            try:
+                await message.bot.kick_chat_member(chat_id=command_chat, user_id=int(usernamee))
+            except ValueError:
+                pass
+
+            await message.reply_to_message.reply(f"Пользователь {usernamee} был забанен.")
+            return
+
+        await message.bot.kick_chat_member(chat_id=command_chat, user_id=message.reply_to_message.from_user.id)
+
+        await message.reply_to_message.reply(f"Пользователь {message.reply_to_message.from_user.first_name} был "
+                                             f"забанен.")
+    else:
+        await message.answer("Ты чо за нн?")
+
 
 @dp.message_handler(commands=['start'])
 async def send_start(message: types.Message):
@@ -24,8 +50,8 @@ async def send_ready_nick(message: types.Message):
     result = [i for i in message.from_user.first_name if i in normal_char or i in caps_normal_char]
     ready_nick = "".join(result)
 
-    await bot.send_message(-665464118, f'{message.from_user.first_name} использовал {message.text} в '
-                                       f'{message.chat.title}(#{message.chat.id})')
+    await bot.send_message(chat_report, f'{message.from_user.first_name} использовал {message.text} в '
+                                        f'{message.chat.title}(#{message.chat.id})')
 
     nick = {
         "черный": emoji.emojize(f':black_circle:🎻ʀᴇ|{ready_nick}🌅'),
@@ -39,7 +65,7 @@ async def send_ready_nick(message: types.Message):
         "белый": emoji.emojize(f':white_circle:🎻ʀᴇ|{ready_nick}🌅'),
         "white": emoji.emojize(f':white_circle:🎻ʀᴇ|{ready_nick}🌅'),
         "ktm": emoji.emojize(f'🏮༄𝑲𝑻𝑴|{ready_nick}🐈'),
-        "katsu":emoji.emojize(f'🏮༄𝑲𝑻𝑴|{ready_nick}🐈'),
+        "katsu": emoji.emojize(f'🏮༄𝑲𝑻𝑴|{ready_nick}🐈'),
         "катсу": emoji.emojize(f'🏮༄𝑲𝑻𝑴|{ready_nick}🐈'),
         "нюдсы": emoji.emojize(f'🏮༄𝑲𝑻𝑴|{ready_nick}🐈'),
     }
