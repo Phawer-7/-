@@ -1,13 +1,10 @@
 from aiogram import Bot, types, Dispatcher, executor
 
 from localization import *
+from config import bot_token, admins_id, chat_report, command_chat
 
-bot_token = "0000000000:AAAAAAAAAAAAAAAA"
 bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
-admins_id = [0000000000, 0000000000, 0000000000]
-chat_report = 0000000000
-command_chat = 0000000000
 
 
 @dp.message_handler(commands=["гур"], commands_prefix="!")
@@ -37,6 +34,11 @@ async def send_start(message: types.Message):
     await message.reply(
         "/гир - Получить самый обычный ник \n/гир {цвет} - Получить ник с определенным кругом. \"/гир белый\" даст "
         "ник с белым кругом. Доступные цвета: черный, желтый и белый")
+
+
+@dp.message_handler(commands=['list'], commands_prefix="!/")
+async def send_list_of_triggers(message: types.Message):
+    await message.answer(send_name(dictt=True))
 
 
 @dp.message_handler(commands=['get_chat_id'])

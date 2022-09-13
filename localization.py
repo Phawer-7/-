@@ -11,7 +11,8 @@ caps_normal_char = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 
                     'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю']
 
 
-def send_name(name, color, user_id):
+def send_name(name='Kamol', color='белый', user_id=000000, dictt=False):
+    global nick
     nick = {
         "черный": emoji.emojize(f':black_circle:🎻ʀᴇ|{name}🌅'),
         "чёрный": emoji.emojize(f':black_circle:🎻ʀᴇ|{name}🌅'),
@@ -39,16 +40,20 @@ def send_name(name, color, user_id):
         "жёлтый": emoji.emojize(f':yellow_circle:🎻ʀᴇ|:joystick:{name}:musical_note:🌅'),
         'мизан': emoji.emojize(f'𝖑𝖎𝖗||{name}'),
         'мизантроп': emoji.emojize(f':black_circle:𝖑𝖎𝖗||{name}'),
-        "ktm": emoji.emojize(f'🏮༄𝑲𝑻𝑴|{name}🐈'),
-        "katsu": emoji.emojize(f'🏮༄𝑲𝑻𝑴|{name}🐈'),
-        "катсу": emoji.emojize(f'🏮༄𝑲𝑻𝑴|{name}🐈'),
-        "нюдсы": emoji.emojize(f'💃🏻ɴ |{name}🦇'),
+        "ktm": emoji.emojize(f'🏮༄𝑲𝑻𝑴|:joystick:{name}:musical_note:🐈'),
+        "katsu": emoji.emojize(f'🏮༄𝑲𝑻𝑴|:joystick:{name}:musical_note:🐈'),
+        "катсу": emoji.emojize(f'🏮༄𝑲𝑻𝑴|:joystick:{name}:musical_note:🐈'),
+        "нюдсы": emoji.emojize(f'💃🏻ɴ |:joystick:{name}:musical_note:🦇'),
     }
 
-    try:
-        if user_id == 819411604:
-            return malik[color]
-        else:
-            return nick[color]
-    except KeyError:
-        return 'Такого триггера не существует'
+    if dictt:
+        list_of_trig = [i for i, o in nick.items()]
+        return "\n".join(list_of_trig)
+    else:
+        try:
+            if user_id == 819411604:
+                return malik[color]
+            else:
+                return nick[color]
+        except KeyError:
+            return 'Такого триггера не существует'
