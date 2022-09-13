@@ -7,7 +7,7 @@ bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
 
 
-@dp.message_handler(commands=["гур"], commands_prefix="!")
+@dp.message_handler(commands=["гур", "Гур", "Gur", "gur"], commands_prefix="/!")
 async def ban_user(message: types.Message):
     if message.from_user.id in admins_id:
         if not message.reply_to_message:
