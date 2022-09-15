@@ -1,4 +1,6 @@
 from aiogram import Bot, types, Dispatcher, executor
+from aiogram.types import ParseMode
+from aiogram.utils.markdown import text, bold, code
 
 from localization import *
 from config import bot_token, admins_id, chat_report, command_chat
@@ -38,7 +40,8 @@ async def send_start(message: types.Message):
 
 @dp.message_handler(commands=['list'], commands_prefix="!/")
 async def send_list_of_triggers(message: types.Message):
-    await message.answer(send_name(dictt=True))
+    monotext = text(code("/gir trigger"))
+    await message.answer(f'{monotext}\nСписок triggers:\n\n{send_name(dictt=True)}', parse_mode=ParseMode.MARKDOWN)
 
 
 @dp.message_handler(commands=['get_chat_id'])
