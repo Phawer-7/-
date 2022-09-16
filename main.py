@@ -1,6 +1,6 @@
 from aiogram import Bot, types, Dispatcher, executor
 from aiogram.types import ParseMode
-from aiogram.utils.markdown import text, bold, code
+from aiogram.utils.markdown import text, code
 
 from localization import *
 from config import bot_token, admins_id, chat_report, command_chat
@@ -32,7 +32,7 @@ async def ban_user(message: types.Message):
 
 
 @dp.message_handler(commands=['start'])
-async def send_start(message: types.Message):
+async def greeting(message: types.Message):
     await message.reply(
         "/гир - Получить самый обычный ник \n/гир {цвет} - Получить ник с определенным кругом. \"/гир белый\" даст "
         "ник с белым кругом. Доступные цвета: черный, желтый и белый")
@@ -49,14 +49,31 @@ async def get_id(message: types.Message):
     await message.answer(message.chat.id)
 
 
+@dp.message_handler(commands=['опрос', 'Опрос'], commands_prefix="!/.")
+async def send_pool(message: types.Message):
+    message_pool = message.text.split()
+    del message_pool[0]
+
+    await bot.send_poll(chat_id=-message.chat.id, question=" ".join(message_pool), is_anonymous=False,
+                        allows_multiple_answers=False, options=['Играю', "Замена", "Еще не знаю", "Не играю"])
+    await bot.pin_chat_message(chat_id=-message.chat.id, message_id=(message.message_id+1), disable_notification=False)
+    await bot.delete_message(chat_id=-message.chat.id, message_id=message.message_id)
+
+
 @dp.message_handler(commands=["Гир", "гир", "gir", "Gir"], commands_prefix="!/")
 async def send_ready_nick(message: types.Message):
-    result = [i for i in message.from_user.first_name if i in normal_char or i in caps_normal_char]
-    ready_nick = "".join(result)
+    if not message.reply_to_message:
+        result = [i for i in message.from_user.first_name if i in normal_char or i in caps_normal_char]
+    else:
+        result = [i for i in message.reply_to_message.from_user.first_name if i in normal_char or i in caps_normal_char]
+    ready_nick = "".join(result).lstrip()
 
-    await bot.send_message(chat_report, f'{message.from_user.first_name} использовал {message.text} в '
-                                        f'{message.chat.title}(#{message.chat.id})')
-
+    if not message.chat.title is None:
+        await bot.send_message(chat_report, f'{message.from_user.first_name} использовал {message.text} в '
+                                            f'{message.chat.title}(#{message.chat.id})')
+    else:
+        await bot.send_message(chat_report, f'{message.from_user.first_name} использовал {message.text} в '
+                                            f'в приватном чате(#{message.chat.id})')
     try:
         ready_name = send_name(name=ready_nick, color=message.text.split()[1], user_id=message.from_user.id)
         await message.answer(ready_name)
