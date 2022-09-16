@@ -54,10 +54,10 @@ async def send_pool(message: types.Message):
     message_pool = message.text.split()
     del message_pool[0]
 
-    await bot.send_poll(chat_id=-message.chat.id, question=" ".join(message_pool), is_anonymous=False,
+    await bot.send_poll(chat_id=message.chat.id, question=" ".join(message_pool), is_anonymous=False,
                         allows_multiple_answers=False, options=['Играю', "Замена", "Еще не знаю", "Не играю"])
-    await bot.pin_chat_message(chat_id=-message.chat.id, message_id=(message.message_id+1), disable_notification=False)
-    await bot.delete_message(chat_id=-message.chat.id, message_id=message.message_id)
+    await bot.pin_chat_message(chat_id=message.chat.id, message_id=(message.message_id+1), disable_notification=False)
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 @dp.message_handler(commands=["Гир", "гир", "gir", "Gir"], commands_prefix="!/")
