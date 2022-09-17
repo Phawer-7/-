@@ -4,81 +4,61 @@ normal_char = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d", 
                "x", "c", "v", "b", "n", "m", "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ", "ф", "ы",
                "в", "а", "п", "р", "о", "л", "д", "ж", "э", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю", "/", "(", ")",
                " ", "\\", "'", '"', 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', "#",
-               '_', '-', '&', '*', '%', "!", "?", "!", "^", "$", "ё", "қ", "ў", "'",]
+               '_', '-', '&', '*', '%', "!", "?", "!", "^", "$", "ё", "қ", "ў", "'", "♡", "ғ", "ҳ"]
 
 caps_normal_char = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z',
                     'X', 'C', 'V', 'B', 'N', 'M', 'Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ', 'Ф', 'Ы',
                     'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', "Ё", "Қ",
-                    "Ў"]
+                    "Ў", "Ҳ", "Ғ"]
 
 
-def send_name(name='Kamol', color='белый', user_id=000000, dictt=False):
-    global nick
+def send_name(name='ник', color='белый', user_id=000000, return_dict=False):
     nick = {
-        "черный": emoji.emojize(f':black_circle:🎻ʀᴇ|{name}🌅'),
-        "чёрный": emoji.emojize(f':black_circle:🎻ʀᴇ|{name}🌅'),
-        "black": emoji.emojize(f':black_circle:🎻ʀᴇ|{name}🌅'),
-        "желтый": emoji.emojize(f':yellow_circle:🎻ʀᴇ|{name}🌅'),
-        "yellow": emoji.emojize(f':yellow_circle:🎻ʀᴇ|{name}🌅'),
-        "жёлтый": emoji.emojize(f':yellow_circle:🎻ʀᴇ|{name}🌅'),
-        'мизан': emoji.emojize(f'𝖑𝖎𝖗||{name}'),
-        'мизантроп': emoji.emojize(f':black_circle:𝖑𝖎𝖗||{name}'),
-        "белый": emoji.emojize(f':white_circle:🎻ʀᴇ|{name}🌅'),
-        "white": emoji.emojize(f':white_circle:🎻ʀᴇ|{name}🌅'),
-        "ktm": emoji.emojize(f'🏮༄𝑲𝑻𝑴|{name}🐈'),
-        "katsu": emoji.emojize(f'🏮༄𝑲𝑻𝑴|{name}🐈'),
-        "катсу": emoji.emojize(f'🏮༄𝑲𝑻𝑴|{name}🐈'),
-        "нюдсы": emoji.emojize(f'💃🏻ɴ |{name}🦇'),
-        "бабочки": emoji.emojize(f'🖤𝐛𝐮𝐭𝐭|{name}🦋'),
-        "баттерфлай": emoji.emojize(f'🖤𝐛𝐮𝐭𝐭|{name}🦋'),
-        "butterfly": emoji.emojize(f'🖤𝐛𝐮𝐭𝐭|{name}🦋'),
-        "розы": emoji.emojize(f'🥀𝐖𝐑𝐓 |{name}🌹'),
-        "уилтед": emoji.emojize(f'🥀𝐖𝐑𝐓 |{name}🌹'),
-        "rose": emoji.emojize(f'🥀𝐖𝐑𝐓 |{name}🌹'),
-        "wilted": emoji.emojize(f'🥀𝐖𝐑𝐓 |{name}🌹'),
-        "charged": emoji.emojize(f'𝗖𝗧🦾|{name}🧑‍🏭'),
-        "чаржед": emoji.emojize(f'𝗖𝗧🦾|{name}🧑‍🏭'),
-        "чаргет": emoji.emojize(f'𝗖𝗧🦾|{name}🧑‍🏭'),
-        "сварщики": emoji.emojize(f'𝗖𝗧🦾|{name}🧑‍🏭'),
-        "сварщик": emoji.emojize(f'𝗖𝗧🦾|{name}🧑‍🏭'),
+
+        "черный": [':black_circle:🎻ʀᴇ|', '🌅'],
+        "чёрный": [':black_circle:🎻ʀᴇ|', '🌅'],
+        "black": [':black_circle:🎻ʀᴇ|', '🌅'],
+        "желтый": [':yellow_circle:🎻ʀᴇ|', '🌅'],
+        "yellow": [':yellow_circle:🎻ʀᴇ|', '🌅'],
+        "жёлтый": [':yellow_circle:🎻ʀᴇ|', '🌅'],
+        'мизан': ['𝖑𝖎𝖗||'],
+        'мизантроп': ['𝖑𝖎𝖗||'],
+        "белый": [':white_circle:🎻ʀᴇ|', '🌅'],
+        "white": [':white_circle:🎻ʀᴇ|', '🌅'],
+        "ktm": ['🏮༄𝑲𝑻𝑴|', '🐈'],
+        "katsu": ['🏮༄𝑲𝑻𝑴|', '🐈'],
+        "катсу": ['🏮༄𝑲𝑻𝑴|', '🐈'],
+        "нюдсы": ['💃🏻ɴ |', '🦇'],
+        "бабочки": ['🖤𝐛𝐮𝐭𝐭|', '🦋'],
+        "баттерфлай": ['🖤𝐛𝐮𝐭𝐭|', '🦋'],
+        "butterfly": ['🖤𝐛𝐮𝐭𝐭|', '🦋'],
+        "розы": ['🖤🥀𝐖𝐑𝐓 |', '🌹'],
+        "уилтед": ['🖤🥀𝐖𝐑𝐓 |', '🌹'],
+        "rose": ['🖤🥀𝐖𝐑𝐓 |', '🌹'],
+        "wilted": ['🖤🥀𝐖𝐑𝐓 |', '🌹'],
+        "charged": ['𝗖𝗧🦾|', '🧑‍🏭'],
+        "чаржед": ['𝗖𝗧🦾|', '🧑‍🏭'],
+        "чаргет": ['𝗖𝗧🦾|', '🧑‍🏭'],
+        "сварщики": ['𝗖𝗧🦾|', '🧑‍🏭'],
+        "сварщик": ['𝗖𝗧🦾|', '🧑‍🏭'],
+        "самурай": ["Sᴛ| |⛩","🍃"],
+        "самураи":["Sᴛ| |⛩","🍃"],
+        "samurai": ["Sᴛ| |⛩","🍃"]
     }
 
-    malik = {
-        "белый": emoji.emojize(f':white_circle:🎻ʀᴇ|:joystick:{name}:musical_note:🌅'),
-        "white": emoji.emojize(f':white_circle:🎻ʀᴇ|:joystick:{name}:musical_note:🌅'),
-        "черный": emoji.emojize(f':black_circle:🎻ʀᴇ|:joystick:{name}:musical_note:🌅'),
-        "black": emoji.emojize(f':black_circle:🎻ʀᴇ|:joystick:{name}:musical_note:🌅'),
-        "чёрный": emoji.emojize(f':black_circle:🎻ʀᴇ|:joystick:{name}:musical_note:🌅'),
-        "желтый": emoji.emojize(f':yellow_circle:🎻ʀᴇ|:joystick:{name}:musical_note:🌅'),
-        "жёлтый": emoji.emojize(f':yellow_circle:🎻ʀᴇ|:joystick:{name}:musical_note:🌅'),
-        'мизан': emoji.emojize(f'𝖑𝖎𝖗||{name}'),
-        'мизантроп': emoji.emojize(f':black_circle:𝖑𝖎𝖗||{name}'),
-        "ktm": emoji.emojize(f'🏮༄𝑲𝑻𝑴|:joystick:{name}:musical_note:🐈'),
-        "katsu": emoji.emojize(f'🏮༄𝑲𝑻𝑴|:joystick:{name}:musical_note:🐈'),
-        "катсу": emoji.emojize(f'🏮༄𝑲𝑻𝑴|:joystick:{name}:musical_note:🐈'),
-        "нюдсы": emoji.emojize(f'💃🏻ɴ |:joystick:{name}:musical_note:🦇'),
-        "бабочки": emoji.emojize(f'🖤𝐛𝐮𝐭𝐭|:joystick:{name}:musical_note:🦋'),
-        "баттерфлай": emoji.emojize(f'🖤𝐛𝐮𝐭𝐭|:joystick:{name}:musical_note:🦋'),
-        "butterfly": emoji.emojize(f'🖤𝐛𝐮𝐭𝐭|:joystick:{name}:musical_note:🦋'),
-        "розы": emoji.emojize(f'🥀𝐖𝐑𝐓 |:joystick:{name}:musical_note:🌹'),
-        "уилтед": emoji.emojize(f'🥀𝐖𝐑𝐓 |:joystick:{name}:musical_note:🌹'),
-        "rose": emoji.emojize(f'🥀𝐖𝐑𝐓 |:joystick:{name}:musical_note:🌹'),
-        "wilted": emoji.emojize(f'🥀𝐖𝐑𝐓 |:joystick:{name}:musical_note:🌹'),
-        "charged": emoji.emojize(f'𝗖𝗧🦾|:joystick:{name}:musical_note:🧑‍🏭'),
-        "чаржед": emoji.emojize(f'𝗖𝗧🦾|:joystick:{name}:musical_note:🧑‍🏭'),
-        "чаргет": emoji.emojize(f'𝗖𝗧🦾|:joystick:{name}:musical_note:🧑‍🏭'),
-        "сварщики": emoji.emojize(f'𝗖𝗧🦾|:joystick:{name}:musical_note:🧑‍🏭'),
-        "сварщик": emoji.emojize(f'𝗖𝗧🦾|:joystick:{name}:musical_note:🧑‍🏭'),
-    }
-
-    if dictt:
+    if return_dict:
         list_of_trig = [i for i, o in nick.items()]
         return "\n".join(list_of_trig)
     else:
         try:
+            x = emoji.emojize(f"{nick[color][0]}")
+            z = emoji.emojize(f"{nick[color][1]}")
+            y = emoji.emojize(f"{emoji.emojize(name)}")
             if user_id == 819411604:
-                return malik[color]
+                return f"{x}{emoji.emojize(':joystick:')}{y}{emoji.emojize(':musical_note:')}{z}"
+            elif user_id == 785644394:
+                return f"{x}{'𝐭𝐢𝐦𝐚'}{z}"
             else:
-                return nick[color]
+                return f"{x}{y}{z}"
         except KeyError:
             return 'Такого триггера не существует'

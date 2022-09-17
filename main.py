@@ -1,12 +1,12 @@
-from aiogram import Bot, types, Dispatcher, executor
+from aiogram import executor
 from aiogram.types import ParseMode
-from aiogram.utils.markdown import text, code
 
-from localization import *
-from config import bot_token, admins_id, chat_report, command_chat
+from simple import *
+from config import admins_id, chat_report, command_chat
+from db import SQLighter
+from players_poll import trueMafia
 
-bot = Bot(token=bot_token)
-dp = Dispatcher(bot)
+db = SQLighter("users.db")
 
 
 @dp.message_handler(commands=["гур", "Гур", "Gur", "gur"], commands_prefix="/!")
@@ -31,33 +31,44 @@ async def ban_user(message: types.Message):
         await message.answer("Ты чо за нн?")
 
 
-@dp.message_handler(commands=['start'])
-async def greeting(message: types.Message):
-    await message.reply(
-        "/гир - Получить самый обычный ник \n/гир {цвет} - Получить ник с определенным кругом. \"/гир белый\" даст "
-        "ник с белым кругом. Доступные цвета: черный, желтый и белый")
-
-
 @dp.message_handler(commands=['list'], commands_prefix="!/")
 async def send_list_of_triggers(message: types.Message):
     monotext = text(code("/gir trigger"))
-    await message.answer(f'{monotext}\nСписок triggers:\n\n{send_name(dictt=True)}', parse_mode=ParseMode.MARKDOWN)
+    await message.answer(f'{monotext}\nСписок triggers:\n\n{send_name(return_dict=True)}', parse_mode=ParseMode.MARKDOWN)
 
 
-@dp.message_handler(commands=['get_chat_id'])
-async def get_id(message: types.Message):
-    await message.answer(message.chat.id)
-
-
-@dp.message_handler(commands=['опрос', 'Опрос'], commands_prefix="!/.")
+@dp.message_handler(commands=['опрос', 'Опрос', '0прос'], commands_prefix="!/. ")
 async def send_pool(message: types.Message):
     message_pool = message.text.split()
     del message_pool[0]
-
-    await bot.send_poll(chat_id=message.chat.id, question=" ".join(message_pool), is_anonymous=False,
+    question = " ".join(message_pool)
+    await message.answer(f'{message.from_user.first_name} запустил опрос {question}')
+    await bot.send_poll(chat_id=message.chat.id, question=question, is_anonymous=False,
                         allows_multiple_answers=False, options=['Играю', "Замена", "Еще не знаю", "Не играю"])
-    await bot.pin_chat_message(chat_id=message.chat.id, message_id=(message.message_id+1), disable_notification=False)
+    await bot.pin_chat_message(chat_id=message.chat.id, message_id=(message.message_id + 2), disable_notification=False)
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
+
+@dp.poll_answer_handler()
+async def poll_answer(poll_answer: types.PollAnswer):
+    if poll_answer['option_ids'][0] == 0:
+        db.add_user(username=poll_answer['user']['username'], id=poll_answer['user']['id'])
+
+
+@dp.message_handler(commands=['список_Трушка'], commands_prefix="!/")
+async def send_list_of_players(message: types.Message):
+    try:
+        username = message.text.split()[1]
+        users = trueMafia(db.get_users(), captain=username)
+        await bot.send_message(message.chat.id, users)
+    except IndexError:
+        users = trueMafia(db.get_users())
+        await bot.send_message(message.chat.id, users)
+
+
+@dp.message_handler(commands=['clear_db'], content_types='!/')
+async def clear(message: types.Message):
+    pass
 
 
 @dp.message_handler(commands=["Гир", "гир", "gir", "Gir"], commands_prefix="!/")
