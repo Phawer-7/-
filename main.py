@@ -54,15 +54,24 @@ async def poll_answer(poll_answer: types.PollAnswer):
     if poll_answer['option_ids'][0] == 0:
         db.add_user(username=poll_answer['user']['username'], id=poll_answer['user']['id'])
 
+        if len(db.get_users()) == 10:
+            bot.send_message(admins_id[0], 'Собрали достаточно людей')
+
 
 @dp.message_handler(commands=['список_Трушка'], commands_prefix="!/")
 async def send_list_of_players(message: types.Message):
     try:
         username = message.text.split()[1]
-        users = trueMafia(db.get_users(), captain=username)
+        if len(db.get_users()) == 10:
+            users = trueMafia(db.get_users(), captain=username)
+        elif len(db.get_users()) > 10:
+            users = trueMafia(db.get_users()[:9], captain=username)
         await bot.send_message(message.chat.id, users)
     except IndexError:
-        users = trueMafia(db.get_users())
+        if len(db.get_users()) == 10:
+            users = trueMafia(db.get_users())
+        elif len(db.get_users()) > 10:
+            users = trueMafia(db.get_users()[:9])
         await bot.send_message(message.chat.id, users)
 
 
