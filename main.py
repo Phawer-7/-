@@ -4,7 +4,9 @@ from aiogram.types import ParseMode
 from simple import *
 from config import admins_id, chat_report, command_chat
 from db import SQLighter
-from players_poll import trueMafia
+from players_poll import trueMafia, bakuMafia
+from remove import remove_users
+
 
 db = SQLighter("users.db")
 
@@ -37,6 +39,14 @@ async def send_list_of_triggers(message: types.Message):
     await message.answer(f'{monotext}\nСписок triggers:\n\n{send_name(return_dict=True)}', parse_mode=ParseMode.MARKDOWN)
 
 
+@dp.message_handler(content_types=['new_chat_members'])
+async def send_pool(message: types.Message):
+    if not db.user_exists(message.from_user.id):
+        db.add_user(username=message.from_user.username, user_id=message.from_user.id, is_play=0)
+    else:
+        db.update_username(username=message.from_user.username, user_id=message.from_user.id)
+
+
 @dp.message_handler(commands=['опрос', 'Опрос', '0прос'], commands_prefix="!/. ")
 async def send_pool(message: types.Message):
     message_pool = message.text.split()
@@ -46,38 +56,60 @@ async def send_pool(message: types.Message):
     await bot.send_poll(chat_id=message.chat.id, question=question, is_anonymous=False,
                         allows_multiple_answers=False, options=['Играю', "Замена", "Еще не знаю", "Не играю"])
     await bot.pin_chat_message(chat_id=message.chat.id, message_id=(message.message_id + 2), disable_notification=False)
-    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    # await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 @dp.poll_answer_handler()
 async def poll_answer(poll_answer: types.PollAnswer):
+    if not db.user_exists(poll_answer['user']['id']):
+        db.add_user(username=poll_answer['user']['username'], user_id=poll_answer['user']['id'], is_play=0)
     if poll_answer['option_ids'][0] == 0:
-        db.add_user(username=poll_answer['user']['username'], id=poll_answer['user']['id'])
+        db.update_username(username=poll_answer['user']['username'], user_id=poll_answer['user']['id'])
+        db.user_play(user_id=poll_answer['user']['id'])
 
         if len(db.get_users()) == 10:
             bot.send_message(admins_id[0], 'Собрали достаточно людей')
 
 
-@dp.message_handler(commands=['список_Трушка'], commands_prefix="!/")
+@dp.message_handler(commands=['тру', "true"], commands_prefix="!/")
 async def send_list_of_players(message: types.Message):
     try:
         username = message.text.split()[1]
-        if len(db.get_users()) == 10:
-            users = trueMafia(db.get_users(), captain=username)
-        elif len(db.get_users()) > 10:
-            users = trueMafia(db.get_users()[:9], captain=username)
-        await bot.send_message(message.chat.id, users)
     except IndexError:
-        if len(db.get_users()) == 10:
-            users = trueMafia(db.get_users())
-        elif len(db.get_users()) > 10:
-            users = trueMafia(db.get_users()[:9])
-        await bot.send_message(message.chat.id, users)
+        username = "@captain"
+
+    print(db.get_users())
+    if len(db.get_users()) == 10:
+        users = trueMafia(db.get_users(), captain=username)
+    elif len(db.get_users()) > 10:
+        users = trueMafia(db.get_users()[:9], captain=username)
+    else:  # todo: ...
+        users = 'Недостаточно игроков..'
+
+    await bot.send_message(message.chat.id, users)
 
 
-@dp.message_handler(commands=['clear_db'], content_types='!/')
+@dp.message_handler(commands=['баку', 'baku'], commands_prefix="!/")
+async def send_list_of_players_for_BAKU(message: types.Message):
+    try:
+        username = message.text.split()[1]
+    except IndexError:
+        username = "@captain"
+
+    if len(db.get_users()) == 15:
+        users = bakuMafia(usernames=db.get_users()[:14], captain=username, last=db.get_users()[-1])
+    elif len(db.get_users()) > 15:
+        users = bakuMafia(usernames=db.get_users()[:14], captain=username, last=db.get_users()[15])
+    else:  # todo: если не хватает все равно отправить список
+        users = 'Недостаточно игроков..'
+
+    await bot.send_message(message.chat.id, users)
+
+
+@dp.message_handler(commands=['clear_db', 'сбросить'], commands_prefix='!/')
 async def clear(message: types.Message):
-    pass
+    remove_users(db.get_users())
+    await message.answer("Готово!")
 
 
 @dp.message_handler(commands=["Гир", "гир", "gir", "Gir"], commands_prefix="!/")
@@ -106,4 +138,4 @@ async def send_ready_nick(message: types.Message):
 
 
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    executor.start_polling(dp, skip_updates=False)
