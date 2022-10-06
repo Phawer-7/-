@@ -1,6 +1,0 @@
-bot_token = "5784154292:AAEPCpk9JhEDJIgqAoSGiml2sP8trHwrb7c"
-# 5785425617:AAFGcJa0R1ARjV8DHlVCl0uNXNBAVjocSzs sav
-# 5784154292:AAEPCpk9JhEDJIgqAoSGiml2sP8trHwrb7c test
-admins_id = [897053725, 819411604, 1292831118]
-chat_report = -665464118
-command_chat = -1001674111955
