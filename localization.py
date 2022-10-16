@@ -1,4 +1,6 @@
 import emoji
+from mongoDB import getTrigger
+
 
 normal_char = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d", "f", "g", "h", "j", "k", "l", "z",
                "x", "c", "v", "b", "n", "m", "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ", "ф", "ы",
@@ -12,57 +14,19 @@ caps_normal_char = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 
                     "Ў", "Ҳ", "Ғ"]
 
 
-def send_name(name='ник', color='белый', user_id=000000, return_dict=False):
-    nick = {
+def send_name(chat_id, name='ник', color='белый', user_id=000000, return_dict=False):
+    try:
+        listValue = getTrigger(collect_name=str(chat_id), trigger_name=color)
+        x = emoji.emojize(f"{listValue[0]}")
+        z = emoji.emojize(f"{listValue[1]}")
 
-        "черный": [':black_circle:🎻ʀᴇ|', '🌅'],
-        "чёрный": [':black_circle:🎻ʀᴇ|', '🌅'],
-        "black": [':black_circle:🎻ʀᴇ|', '🌅'],
-        "желтый": [':yellow_circle:🎻ʀᴇ|', '🌅'],
-        "yellow": [':yellow_circle:🎻ʀᴇ|', '🌅'],
-        "жёлтый": [':yellow_circle:🎻ʀᴇ|', '🌅'],
-        "белый": [':white_circle:🎻ʀᴇ|', '🌅'],
-        "white": [':white_circle:🎻ʀᴇ|', '🌅'],
-        "ktm": ['🏮༄𝑲𝑻𝑴|', '🐈'],
-        "katsu": ['🏮༄𝑲𝑻𝑴|', '🐈'],
-        "катсу": ['🏮༄𝑲𝑻𝑴|', '🐈'],
-        "нюдсы": ['💃🏻ɴ |', '🦇'],
-        "бабочки": ['🖤𝐛𝐮𝐭𝐭|', '🦋'],
-        "баттерфлай": ['🖤𝐛𝐮𝐭𝐭|', '🦋'],
-        "butterfly": ['🖤𝐛𝐮𝐭𝐭|', '🦋'],
-        "charged": ['𝗖𝗧🦾|', '🧑‍🏭'],
-        "чаржед": ['𝗖𝗧🦾|', '🧑‍🏭'],
-        "чаргет": ['𝗖𝗧🦾|', '🧑‍🏭'],
-        "сварщики": ['𝗖𝗧🦾|', '🧑‍🏭'],
-        "сварщик": ['𝗖𝗧🦾|', '🧑‍🏭'],
-        "самурай": ["Sᴛ| |⛩", "🍃"],
-        "самураи": ["Sᴛ| |⛩", "🍃"],
-        "samurai": ["Sᴛ| |⛩", "🍃"],
-        "фифи": ["🌐𝔣𝔦𝔣𝔦𝔨||", "🤖"],
-        "фифитеам": ["🌐𝔣𝔦𝔣𝔦𝔨||", "🤖"],
-        "фифитим": ["🌐𝔣𝔦𝔣𝔦𝔨||", "🤖"],
-        "fifi": ["🌐𝔣𝔦𝔣𝔦𝔨||", "🤖"],
-        "fifiteam": ["🌐𝔣𝔦𝔣𝔦𝔨||", "🤖"],
-        "mori": ["morī |", "| ☠"],
-        "memento": ["morī |", "| ☠"],
-        "мори": ["morī |", "| ☠"],
-        "мементо": ["morī |", "| ☠"],
-        "моменто": ["morī |", "| ☠"],
-    }
-
-    if return_dict:
-        list_of_trig = [i for i, o in nick.items()]
-        return "\n".join(list_of_trig)
-    else:
-        try:
-            x = emoji.emojize(f"{nick[color][0]}")
-            z = emoji.emojize(f"{nick[color][1]}")
-            y = emoji.emojize(f"{emoji.emojize(name)}")
-            if user_id == 819411604:
-                return f"{x}{emoji.emojize(':joystick:')}{y}{emoji.emojize(':musical_note:')}{z}"
-            elif user_id == 785644394:
-                return f"{x}{'𝐭𝐢𝐦𝐚'}{z}"
-            else:
-                return f"{x}{y}{z}"
-        except KeyError:
-            return 'Такого триггера не существует'
+        if user_id == 819411604:
+            return f"{x}{emoji.emojize(':joystick:')}{name}{emoji.emojize(':musical_note:')}{z}"
+        elif user_id == 785644394:
+            return f"{x}{'𝐭𝐢𝐦𝐚'}{z}"
+        else:
+            return f"{x}{name}{z}"
+    except KeyError:
+        return 'Такого триггера не существует'
+    except TypeError:
+        return 'Такого триггера не существует'

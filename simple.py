@@ -16,7 +16,7 @@ async def get_id(message: types.Message):
         await message.answer(message.reply_to_message.from_user.id)
 
 
-@dp.message_handler(commands=['get_my_id'])
+@dp.message_handler(commands=['get_user_id'])
 async def get_id(message: types.Message):
     if not message.reply_to_message:
         await message.answer(message.from_user.id)

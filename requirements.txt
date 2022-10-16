@@ -1,2 +1,3 @@
-aiogram
-emoji
+aiogram~=2.22.1
+emoji~=2.0.0
+pymongo~=4.2.0
