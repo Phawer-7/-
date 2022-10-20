@@ -116,9 +116,9 @@ async def sendTriggerList(message: types.Message):
 async def addNewChatToColl(msg: types.Message):
     if msg.from_user.id == creator:
         message = msg.text.split()
-        value = [message[2:][0], message[2:][2]]
-        print(value)
-        createNewTrigger(collect_name=msg.chat.id, trigger_name=message[1], trigger_value=value)
+        value = message[2]
+        res = [value[:value.find('NAME')], value[value.find('NAME') + 4:]]
+        createNewTrigger(collect_name=msg.chat.id, trigger_name=message[1], trigger_value=message[2])
         await msg.answer(f'Триггер <code>{message[1]}</code> добавлен в список. Используйте /list чтобы '
                          f'получить список.', parse_mode='HTML')
 
