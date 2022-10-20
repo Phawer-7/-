@@ -3,7 +3,8 @@ from aiogram import executor
 from simple import *
 from config import admins_id, chat_report, command_chat, r, t, creator
 from db import SQLighter
-from mongoDB import createColl, createNewTrigger
+from mongoDB import *
+from pymongo.errors import DuplicateKeyError
 
 db = SQLighter("users.db")
 
@@ -28,13 +29,6 @@ async def ban_user(message: types.Message):
                                              f"забанен.")
     else:
         await message.answer("Ты чо за нн?")
-
-
-@dp.message_handler(commands=['list'], commands_prefix="!/")
-async def send_list_of_triggers(message: types.Message):
-    monotext = text(code(""))
-    await message.answer(f'<code>/gir [trigger]</code>\nСписок триггеров чата:\n\n{send_name(return_dict=True)}',
-                         parse_mode='HTML')
 
 
 @dp.message_handler(commands=['опрос', 'Опрос', '0прос'], commands_prefix="!/. ")
@@ -77,7 +71,10 @@ async def send_ready_nick(message: types.Message):
 @dp.message_handler(content_types=['new_chat_members'])
 async def addNewChatToColl(msg: types.Message):
     if msg["new_chat_member"]["id"] == t or msg["new_chat_member"]["id"] == r:
-        createColl(chat_id=msg.chat.id, name=msg.chat.title)
+        try:
+            createColl(chat_id=msg.chat.id, name=msg.chat.title)
+        except DuplicateKeyError:
+            pass
 
 
 @dp.message_handler(commands=['addToDB'])
@@ -109,12 +106,31 @@ async def addNewChatToColl(msg: types.Message):
     pass
 
 
-@dp.message_handler(commands=['add'])
+@dp.message_handler(commands=['list'], commands_prefix='/!.#')
+async def sendTriggerList(message: types.Message):
+    if not message.chat.type == 'private':
+        await message.answer(f'{getTriggerList(message.chat.id)}')
+
+
+@dp.message_handler(commands=['aki'])
 async def addNewChatToColl(msg: types.Message):
     if msg.from_user.id == creator:
         message = msg.text.split()
         value = [message[2:][0], message[2:][2]]
+        print(value)
         createNewTrigger(collect_name=msg.chat.id, trigger_name=message[1], trigger_value=value)
+        await msg.answer(f'Триггер <code>{message[1]}</code> добавлен в список. Используйте /list чтобы '
+                         f'получить список.', parse_mode='HTML')
+
+
+@dp.message_handler(commands=['default'])
+async def addNewChatToColl(msg: types.Message):
+    if msg.from_user.id == creator:
+        message = msg.text.split()
+        value = [message[2:][0], message[2:][2]]
+        setDefaultTriggerChat(collect_name=msg.chat.id, trigger_name=message[1], trigger_value=value)
+        await msg.answer(f'Триггер <code>{message[1]}</code> установлен как триггер по умолчанию. При вызове /gir '
+                         f'без аргументов будет отправляться этот триггер.', parse_mode='HTML')
 
 
 if __name__ == "__main__":
