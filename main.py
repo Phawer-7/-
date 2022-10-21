@@ -1,10 +1,11 @@
 from aiogram import executor
 
 from simple import *
-from config import admins_id, chat_report, command_chat, r, t, creator
+from config import admins_id, chat_report, command_chat, release, test, creator
 from db import SQLighter
 from mongoDB import *
 from pymongo.errors import DuplicateKeyError
+
 
 db = SQLighter("users.db")
 
@@ -70,35 +71,11 @@ async def send_ready_nick(message: types.Message):
 
 @dp.message_handler(content_types=['new_chat_members'])
 async def addNewChatToColl(msg: types.Message):
-    if msg["new_chat_member"]["id"] == t or msg["new_chat_member"]["id"] == r:
+    if msg["new_chat_member"]["id"] == test or msg["new_chat_member"]["id"] == release:
         try:
             createColl(chat_id=msg.chat.id, name=msg.chat.title)
         except DuplicateKeyError:
             pass
-
-
-@dp.message_handler(commands=['addToDB'])
-async def addNewChatToColl(msg: types.Message):
-    createColl(chat_id=msg.chat.id, name=msg.chat.title)
-
-
-@dp.message_handler(commands=['send'])
-async def addNewChatToColl(msg: types.Message):
-    if msg.from_user.id == creator:
-        message = msg.text.split()
-        msgtext = " ".join(message[2:])
-
-        await bot.send_message(chat_id=int(message[1]), text=msgtext)
-        await bot.send_message(chat_report, f'Сообщение "<i>{msgtext}</i>" было отправлено в {int(message[1])}',
-                               parse_mode='HTML')
-
-
-@dp.message_handler(commands=['leave'])
-async def addNewChatToColl(msg: types.Message):
-    if msg.from_user.id == creator:
-        message = msg.text.split()
-        await bot.send_message(chat_report, f'Бот использовал вышел с {int(message[1])}')
-        await bot.leave_chat(chat_id=int(message[1]))
 
 
 @dp.message_handler(commands=['import'])
@@ -112,25 +89,70 @@ async def sendTriggerList(message: types.Message):
         await message.answer(f'{getTriggerList(message.chat.id)}')
 
 
-@dp.message_handler(commands=['aki'])
+@dp.message_handler(commands=['aki'], is_admin=True, commands_prefix='!/.')
 async def addNewChatToColl(msg: types.Message):
-    if msg.from_user.id == creator:
-        message = msg.text.split()
-        value = message[2]
-        res = [value[:value.find('NAME')], value[value.find('NAME') + 4:]]
-        createNewTrigger(collect_name=msg.chat.id, trigger_name=message[1], trigger_value=message[2])
-        await msg.answer(f'Триггер <code>{message[1]}</code> добавлен в список. Используйте /list чтобы '
-                         f'получить список.', parse_mode='HTML')
+    if not msg.chat.type == 'private':
+        try:
+            if msg.reply_to_message:
+                message = msg.reply_to_message.text.split()
+                value = message[1]
+                trigger_name = message[0]
+            else:
+                message = msg.text.split()
+                value = message[2]
+                trigger_name = message[1]
+
+            index = value.find('NAME')
+            if not index == -1:
+                res = [value[:index], value[index + 4:]]
+            else:
+                res = [value, '']
+
+            createNewTrigger(collect_name=msg.chat.id, trigger_name=trigger_name, trigger_value=res)
+            await msg.answer(f'Триггер <code>{message[1]}</code> добавлен в список. Используйте /list чтобы '
+                             f'получить список.', parse_mode='HTML')
+
+        except IndexError:
+            await msg.answer('Недостаточно аргументов. \nПример команды: `!aki [trigger] [sample]`\n'
+                             '[Подробнее о sample(шаблонах) читайте тут](https://t.me/savonarola_chan/2)',
+                             parse_mode='Markdown', disable_web_page_preview=True)
+    else:
+        await msg.answer('Используйте команду в чате.')
 
 
-@dp.message_handler(commands=['default'])
+@dp.message_handler(commands=['default'], is_admin=True, commands_prefix='!/.')
 async def addNewChatToColl(msg: types.Message):
     if msg.from_user.id == creator:
-        message = msg.text.split()
-        value = [message[2:][0], message[2:][2]]
-        setDefaultTriggerChat(collect_name=msg.chat.id, trigger_name=message[1], trigger_value=value)
-        await msg.answer(f'Триггер <code>{message[1]}</code> установлен как триггер по умолчанию. При вызове /gir '
-                         f'без аргументов будет отправляться этот триггер.', parse_mode='HTML')
+        try:
+            message = msg.text.split()
+            value = message[2]
+            index = value.find('NAME')
+            if not index == -1:
+                res = [value[:index], value[index + 4:]]
+            else:
+                res = [value, '']
+
+            setDefaultTriggerChat(collect_name=msg.chat.id, trigger_name=message[1], trigger_value=res)
+            await msg.answer(f'Триггер <code>{message[1]}</code> добавлен в список. Используйте /list чтобы '
+                             f'получить список.', parse_mode='HTML')
+        except IndexError:
+            await msg.answer('Недостаточно аргументов. ')
+
+
+@dp.message_handler(commands=['setme'], commands_prefix='!/.')
+async def setMyDefaultName(message: types.Message):
+    if message.reply_to_message:
+        setDefaultNameUser(user_id=message.reply_to_message.from_user.id, name=message.reply_to_message.text,
+                           telegram_name=message.reply_to_message.from_user.first_name,
+                           username=message.reply_to_message.from_user.username)
+    else:
+        try:
+            name = message.text.split()[1]
+            setDefaultNameUser(user_id=message.from_user.id, name=name,
+                               telegram_name=message.from_user.first_name,
+                               username=message.from_user.username)
+        except IndexError:
+            await message.answer('Используйте <code>/setme [Ваше имя]</code> без квадратных скобок. ')
 
 
 if __name__ == "__main__":

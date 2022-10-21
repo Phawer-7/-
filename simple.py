@@ -2,10 +2,13 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.utils.markdown import text, code
 from localization import *
 
-from config import bot_token, chat_report
+from config import bot_token, chat_report, creator
+from filters import IsAdminFilter
 
 bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
+
+dp.filters_factory.bind(IsAdminFilter)
 
 
 @dp.message_handler(commands=['get_chat_id'])
@@ -24,9 +27,28 @@ async def get_id(message: types.Message):
         await message.answer(message.reply_to_message.from_user.id)
 
 
+@dp.message_handler(commands=['send'])
+async def addNewChatToColl(msg: types.Message):
+    if msg.from_user.id == creator:
+        message = msg.text.split()
+        msgtext = " ".join(message[2:])
+
+        await bot.send_message(chat_id=int(message[1]), text=msgtext)
+        await bot.send_message(chat_report, f'Сообщение "<i>{msgtext}</i>" было отправлено в {int(message[1])}',
+                               parse_mode='HTML')
+
+
+@dp.message_handler(commands=['leave'])
+async def addNewChatToColl(msg: types.Message):
+    if msg.from_user.id == creator:
+        message = msg.text.split()
+        await bot.send_message(chat_report, f'Бот использовал вышел с {int(message[1])}')
+        await bot.leave_chat(chat_id=int(message[1]))
+
+
 @dp.message_handler(commands=['start'])
 async def greeting(message: types.Message):
-    await message.answer(f"Привет. /gir")
+    await message.answer(f"Привет. Я бот для турнирных чатов.")
 
 
 @dp.message_handler(commands=['dev'])
@@ -37,6 +59,11 @@ async def send_admins_username(message: types.Message):
 @dp.message_handler(commands=['news'])
 async def get_id(message: types.Message):
     await message.answer('https://t.me/RenaissanceFlorentina')
+
+
+@dp.message_handler(commands=['help'])
+async def get_id(message: types.Message):
+    await message.answer('https://t.me/savonarola_chan')
 
 
 @dp.message_handler(commands=['Гор', "гор", "gor", "Gor"], commands_prefix="!/")
