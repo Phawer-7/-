@@ -62,18 +62,44 @@ def usersNameExists(user_id: int):
         return False
 
 
-def returnDefaultCommandSmiles(chat_id: int):
-    coll = db[str(chat_id)]
-    if not coll.find_one({'default_name'}) is None:
-        return coll.find_one({'telegram-id': ''})['name']
+def defaultSmilesAreadyExists(user_id: int):
+    coll = db['users']
+    if not coll.find_one({'telegram-id': user_id}) is None:
+        return coll.find_one({'telegram-id': user_id})['name']
     else:
         return False
 
 
 def getTriggerList(collect_name):
     coll = db[str(collect_name)]
-    triggerList = ''
-    for i in coll.find_one()['name']:
-        triggerList = f'{triggerList}{i}'
+    triggerList = 'Список триггеров чата:\n'
+    for i in coll.find():
+        try:
+            triggerList = f"{triggerList}{i['name']}\n"
+        except KeyError:
+            pass
 
     return triggerList
+
+
+def updateDefaultNameUser(user_id: int, name: str):
+    coll = db['users']
+
+    old_name = {'telegram-id': user_id}
+    new = {'$set': {'name': name}}
+
+    coll.update_one(old_name, new)
+
+
+def getDefaultTriggerList():
+    coll = db['default']
+
+    DefaultTriggerList = []
+
+    for i in coll.find():
+        try:
+            DefaultTriggerList.append(i['value'])
+        except KeyError:
+            pass
+
+    return DefaultTriggerList

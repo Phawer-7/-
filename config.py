@@ -1,12 +1,14 @@
-bot_token = "BOT Token from @botfather"
-mongo = "mongodb+srv"
+bot_token = "5704161549:AAFDzsQ_2a2zdxkaL7uFpYUMuhxkhSxT5s8"
+mongo = "mongodb+srv://phawer:GSlMIg8KULKH5UKK@cluster0.kmmemly.mongodb.net/?retryWrites=true&w=majority"
 
-admins_id = [897053725, 819411604, 1292831118]
+# 5785425617:AAFGcJa0R1ARjV8DHlVCl0uNXNBAVjocSzs sav
+# 5704161549:AAFDzsQ_2a2zdxkaL7uFpYUMuhxkhSxT5s8 test
+
 chat_report = -665464118
 command_chat = -1001674111955
 
 release = 5785425617
-test = 5784154292
+test = 5704161549
 
 creator = 897053725
 

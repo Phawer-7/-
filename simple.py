@@ -1,8 +1,7 @@
 from aiogram import Bot, Dispatcher, types
-from aiogram.utils.markdown import text, code
 from localization import *
 
-from config import bot_token, chat_report, creator
+from config import bot_token, chat_report, creator, command_chat
 from filters import IsAdminFilter
 
 bot = Bot(token=bot_token)
@@ -51,11 +50,6 @@ async def greeting(message: types.Message):
     await message.answer(f"Привет. Я бот для турнирных чатов.")
 
 
-@dp.message_handler(commands=['dev'])
-async def send_admins_username(message: types.Message):
-    await message.answer('@ojfbv')
-
-
 @dp.message_handler(commands=['news'])
 async def get_id(message: types.Message):
     await message.answer('https://t.me/RenaissanceFlorentina')
@@ -64,6 +58,15 @@ async def get_id(message: types.Message):
 @dp.message_handler(commands=['help'])
 async def get_id(message: types.Message):
     await message.answer('https://t.me/savonarola_chan')
+
+
+@dp.message_handler(commands=["гур", "Гур", "Gur", "gur"], commands_prefix="/!")
+async def ban_user(message: types.Message):
+    if not message.chat.type == 'private':
+        if message.reply_to_message:
+            await message.bot.kick_chat_member(chat_id=command_chat, user_id=message.reply_to_message.from_user.id)
+            await message.reply_to_message.reply(f"Пользователь {message.reply_to_message.from_user.first_name} был "
+                                                 f"забанен.")
 
 
 @dp.message_handler(commands=['Гор', "гор", "gor", "Gor"], commands_prefix="!/")

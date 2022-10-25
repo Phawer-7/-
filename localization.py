@@ -33,6 +33,9 @@ def send_name(chat_id, color, name='ник', default=False):
             elif type(listValue) is str:
                 return listValue
     except KeyError:
-        return 'Такого триггера не существует'
-    except TypeError:
         return f'🎻ʀᴇ|{name}🌅'
+    except TypeError:
+        return 'Такого триггера не существует'
+
+
+
