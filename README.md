@@ -6,9 +6,6 @@
 Библиотека для управления ботом<br>
 <code>pip install aiogram</code>
 
-Библиотека для работы смайликов<br>
-<code>pip install emoji</code><br>
-
 Бот для работы с БД<br>
 <code>pip install pymongo[srv]</code>
 
