@@ -1,6 +1,6 @@
 import emoji
 from mongoDB import getTrigger, getDefaultTriggerChat
-
+from user_triggers import getUserTrigger
 
 normal_char = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d", "f", "g", "h", "j", "k", "l", "z",
                "x", "c", "v", "b", "n", "m", "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ", "ф", "ы",
@@ -38,4 +38,16 @@ def send_name(chat_id, color, name='ник', default=False):
         return 'Такого триггера не существует'
 
 
-
+def personal_sendName(user_id, trigger_name, name='ник'):
+    try:
+        listValue = getUserTrigger(user_id=user_id, trigger_name=trigger_name)
+        if type(listValue) is list:
+            x = emoji.emojize(f"{listValue[0]}")
+            z = emoji.emojize(f"{listValue[1]}")
+            return f"{x}{name}{z}"
+        elif type(listValue) is str:
+            return listValue
+    except KeyError:
+        return f'🎻ʀᴇ|{name}🌅'
+    except TypeError:
+        return 'У вас нет такого триггера.'

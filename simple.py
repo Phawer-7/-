@@ -1,4 +1,6 @@
 from aiogram import Bot, Dispatcher, types
+from aiogram.utils.exceptions import BadRequest
+
 from localization import *
 
 from config import bot_token, chat_report, creator, command_chat
@@ -11,7 +13,7 @@ dp.filters_factory.bind(IsAdminFilter)
 
 
 @dp.message_handler(commands=['get_chat_id'])
-async def get_id(message: types.Message):
+async def get_chat_id(message: types.Message):
     if not message.reply_to_message:
         await message.answer(message.chat.id)
     else:
@@ -19,7 +21,7 @@ async def get_id(message: types.Message):
 
 
 @dp.message_handler(commands=['get_user_id'])
-async def get_id(message: types.Message):
+async def get_user_id(message: types.Message):
     if not message.reply_to_message:
         await message.answer(message.from_user.id)
     else:
@@ -27,7 +29,7 @@ async def get_id(message: types.Message):
 
 
 @dp.message_handler(commands=['send'])
-async def addNewChatToColl(msg: types.Message):
+async def sendMessageToChat(msg: types.Message):
     if msg.from_user.id == creator:
         message = msg.text.split()
         msgtext = " ".join(message[2:])
@@ -38,7 +40,7 @@ async def addNewChatToColl(msg: types.Message):
 
 
 @dp.message_handler(commands=['leave'])
-async def addNewChatToColl(msg: types.Message):
+async def leaveFromChat(msg: types.Message):
     if msg.from_user.id == creator:
         message = msg.text.split()
         await bot.send_message(chat_report, f'Бот использовал вышел с {int(message[1])}')
@@ -51,12 +53,12 @@ async def greeting(message: types.Message):
 
 
 @dp.message_handler(commands=['news'])
-async def get_id(message: types.Message):
+async def sendNewsChannel(message: types.Message):
     await message.answer('https://t.me/RenaissanceFlorentina')
 
 
 @dp.message_handler(commands=['help'])
-async def get_id(message: types.Message):
+async def getHelp(message: types.Message):
     await message.answer('https://t.me/savonarola_chan')
 
 
@@ -67,6 +69,24 @@ async def ban_user(message: types.Message):
             await message.bot.kick_chat_member(chat_id=command_chat, user_id=message.reply_to_message.from_user.id)
             await message.reply_to_message.reply(f"Пользователь {message.reply_to_message.from_user.first_name} был "
                                                  f"забанен.")
+
+
+@dp.message_handler(commands=['опрос', 'Опрос', '0прос'], commands_prefix="!/.")
+async def send_poll_gm(message: types.Message):
+    if not message.chat.type == 'private':
+        message_pool = message.text.split()
+        del message_pool[0]
+        question = " ".join(message_pool)
+        poll = await bot.send_poll(chat_id=message.chat.id, question=question, is_anonymous=False,
+                                   allows_multiple_answers=False, options=['Играю', "Замена", "Еще не знаю",
+                                                                           "Не играю"])
+        try:
+            await bot.pin_chat_message(chat_id=message.chat.id, message_id=poll.message_id, disable_notification=False)
+        except BadRequest:
+            pass
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    else:
+        await message.answer('Команда используется только в группах.')
 
 
 @dp.message_handler(commands=['Гор', "гор", "gor", "Gor"], commands_prefix="!/")
@@ -91,4 +111,3 @@ async def send_nick_without_smiles(message: types.Message):
     else:
         await bot.send_message(chat_report, f'{message.from_user.first_name} использовал {message.text} в '
                                             f'в приватном чате(#{message.chat.id})')
-
