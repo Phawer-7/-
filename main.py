@@ -58,7 +58,7 @@ async def addNewChatToColl(msg: types.Message):
         await msg.answer(f'Привет, {msg.from_user.first_name}!⚡️')
 
 
-@dp.message_handler(commands=['del', 'delete', 'del_trigger'], commands_prefix='!/.')
+@dp.message_handler(commands=['del', 'delete', 'del_trigger'], is_admin=True, commands_prefix='!/.')
 async def deleteTrigger(message: types.Message):
     try:
         trigger_name = message.text.split()[1]
