@@ -15,27 +15,32 @@ caps_normal_char = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 
 
 
 def send_name(chat_id, color, name='ник', default=False):
+    print('runned send_name()')
     try:
         if not default:
             listValue = getTrigger(collect_name=str(chat_id), trigger_name=color)
+            print(f"listValue {listValue}")
             if type(listValue) is list:
                 x = emoji.emojize(f"{listValue[0]}")
                 z = emoji.emojize(f"{listValue[1]}")
+                print(f"{x}{name}{z}")
                 return f"{x}{name}{z}"
             elif type(listValue) is str:
                 return listValue
         else:
             listValue = getDefaultTriggerChat(collect_name=chat_id)['value']
+            print(f"listValue {listValue}")
             if type(listValue) is list:
                 x = emoji.emojize(f"{listValue[0]}")
                 z = emoji.emojize(f"{listValue[1]}")
+                print(f"{x}{name}{z}")
                 return f"{x}{name}{z}"
             elif type(listValue) is str:
                 return listValue
     except KeyError:
         return f'🎻ʀᴇ|{name}🌅'
     except TypeError:
-        return 'Такого триггера не существует'
+        return 'У вас нет такого триггера.'
 
 
 def personal_sendName(user_id, trigger_name, name='ник'):

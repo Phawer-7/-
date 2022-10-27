@@ -1,5 +1,6 @@
 from aiogram import Bot, Dispatcher, types
 from aiogram.utils.exceptions import BadRequest
+import random
 
 from localization import *
 
@@ -62,13 +63,22 @@ async def getHelp(message: types.Message):
     await message.answer('https://t.me/savonarola_chan')
 
 
-@dp.message_handler(commands=["гур", "Гур", "Gur", "gur"], commands_prefix="/!")
+@dp.message_handler(commands=["гур", "Гур", "Gur", "gur"], commands_prefix="/!.")
 async def ban_user(message: types.Message):
-    if not message.chat.type == 'private':
+    if message.from_user.id in [creator, 5197692954, 5103418171]:
         if message.reply_to_message:
-            await message.bot.kick_chat_member(chat_id=command_chat, user_id=message.reply_to_message.from_user.id)
-            await message.reply_to_message.reply(f"Пользователь {message.reply_to_message.from_user.first_name} был "
-                                                 f"забанен.")
+            await message.bot.kick_chat_member(chat_id=message.chat.id, user_id=message.reply_to_message.from_user.id)
+            await message.reply_to_message.reply(f"Пользователь {message.reply_to_message.from_user.first_name} "
+                                                 f"был забанен.")
+        else:
+            try:
+                who = message.text.split()[1]
+                await message.bot.kick_chat_member(chat_id=message.chat.id, user_id=int(who))
+                await message.answer(f"Пользователь был забанен.")
+            except IndexError:
+                await message.answer(f'🤨IndEr')
+    else:
+        await message.answer(random.choice(['🤪🤪', '🤨🤨', '😜😜']))
 
 
 @dp.message_handler(commands=['опрос', 'Опрос', '0прос'], commands_prefix="!/.")
