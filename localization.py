@@ -1,6 +1,6 @@
 import emoji
 from mongoDB import getTrigger, getDefaultTriggerChat
-from user_triggers import getUserTrigger
+from user_triggersDB import getUserTrigger
 
 normal_char = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d", "f", "g", "h", "j", "k", "l", "z",
                "x", "c", "v", "b", "n", "m", "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ", "ф", "ы",
@@ -14,15 +14,13 @@ caps_normal_char = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 
                     "Ў", "Ҳ", "Ғ"]
 
 
-def send_name(chat_id, color, name='ник', default=False):
-    print('runned send_name()')
+def send_name(chat_id, trigger, name='ник', default=False):
     try:
         if not default:
-            listValue = getTrigger(collect_name=str(chat_id), trigger_name=color)
+            listValue = getTrigger(collect_name=str(chat_id), trigger_name=trigger)
             if type(listValue) is list:
                 x = emoji.emojize(f"{listValue[0]}")
                 z = emoji.emojize(f"{listValue[1]}")
-                print(f"{x}{name}{z}")
                 return f"{x}{name}{z}"
             elif type(listValue) is str:
                 return listValue

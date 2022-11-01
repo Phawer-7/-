@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+import random
 
 from config import mongo
 

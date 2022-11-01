@@ -2,11 +2,11 @@ from localization import caps_normal_char, normal_char, personal_sendName
 from simple import dp, types, bot
 from manipulationWithName import returnWithoutSmiles
 from mongoDB import usersNameExists
-from user_triggers import createUserColl, userExists, createNewUserTrigger, updateUserTrigger, TriggerAlreadyExists, \
+from user_triggersDB import createUserColl, userExists, createNewUserTrigger, updateUserTrigger, TriggerAlreadyExists, \
     getPersonalTriggerList
 
 
-@dp.message_handler(commands=['ger'], commands_prefix='!/.#')
+@dp.message_handler(commands=['ger', 'Ger', 'гер', 'Гер'], commands_prefix='!/.#')
 async def sendPrivateTrigger(message: types.Message):
     if not userExists(message.from_user.id):
         createUserColl(user_id=message.from_user.id, name=message.from_user.first_name,

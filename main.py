@@ -6,10 +6,10 @@ from simple import *
 from config import chat_report, release, test
 from mongoDB import usersNameExists, createColl, setDefaultNameUser, updateDefaultNameUser, deleteChatTrigger, \
     triggerChatExists
-from user_triggers import deleteUserTrigger, triggerUserExists
+from user_triggersDB import deleteUserTrigger, triggerUserExists
 
 from chatTriggers import sendTriggerList, addNewDefaultTriggerChatToColl, addNewTriggerChatToCollbyCreator, \
-    addNewTriggerChatToColl, send_ready_nick, send_ready_nick
+    addNewTriggerChatToColl, send_ready_nick, sendName
 from userTriggers import sendPrivateTrigger, addPrivateTrigger, sendPersonalTriggerList
 
 
@@ -42,6 +42,11 @@ async def setMyDefaultName(message: types.Message):
         except IndexError:
             await message.answer('Используйте <code>/setme [Ваше имя]</code> где вместо [Ваше имя] ставите ваш '
                                  'никнейм или имя. ', parse_mode='HTML')
+
+
+@dp.message_handler(commands=['delMe'], commands_prefix='!/.')
+async def deleteUserDefaultName(message: types.Message):
+    pass
 
 
 @dp.message_handler(content_types=['new_chat_members'])

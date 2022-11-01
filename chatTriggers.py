@@ -4,11 +4,12 @@ from manipulationWithName import returnWithoutSmiles
 from simple import dp, bot, types
 from mongoDB import usersNameExists, getTriggerList, createColl, createNewTrigger, setDefaultTriggerChat, \
     defaultSmilesAreadyExists, updateDefaultSmilesChat, triggerChatExists, updateChatTrigger
+from aiogram.utils.exceptions import MessageTextIsEmpty
 
 
 @dp.message_handler(commands=["Гир", "гир", "gir", "Gir"], commands_prefix="!/.")
 async def send_ready_nick(message: types.Message):
-    if message.reply_to_message:
+    if message.reply_to_message and not message.chat.type == 'private':
         membersName = message.reply_to_message.from_user.first_name
         membersId = message.reply_to_message.from_user.id
     else:
@@ -17,27 +18,65 @@ async def send_ready_nick(message: types.Message):
 
     if not usersNameExists(membersId):
         ready_nick = returnWithoutSmiles(membersName)
-        print(ready_nick)  # 0
         if ready_nick == 0:
             result = [i for i in membersName if i in normal_char or i in caps_normal_char]
             ready_nick = "".join(result).lstrip()
-            print(ready_nick)  # Камoл
             if len(ready_nick) == 0:
                 ready_nick = membersName
     else:
         ready_nick = usersNameExists(membersId)
 
     try:
-        ready_name = send_name(chat_id=message.chat.id, name=ready_nick, color=message.text.split()[1])
-        #  'is_active'
-        print(ready_name)
-        await message.answer(ready_name)
-    except IndexError:
-        ooo = send_name(chat_id=message.chat.id, name=ready_nick, default=True, color=0)
-        if not ooo == 'Такого триггера не существует':
-            await message.answer(ooo)
+        if not message.chat.type == 'private':
+            ready_name = send_name(chat_id=message.chat.id, name=ready_nick, trigger=message.text.split()[1])
         else:
+            ready_name = f'🎻ʀᴇ|{ready_nick}🌅'
+        try:
+            await message.answer(ready_name)
+        except MessageTextIsEmpty:
+            await message.answer('Такого триггера не существует')
+    except IndexError:
+        ooo = send_name(chat_id=message.chat.id, name=ready_nick, default=True, trigger=0)
+        if message.chat.type == 'private':
             await message.answer(f'🎻ʀᴇ|{ready_nick}🌅')
+        else:
+            if not ooo == 'Такого триггера не существует':
+                await message.answer(ooo)
+            else:
+                await message.answer(f'🎻ʀᴇ|{ready_nick}🌅')
+
+    if not message.chat.title is None:
+        await bot.send_message(chat_report, f'{message.from_user.first_name} использовал {message.text} в '
+                                            f'{message.chat.title}(#{message.chat.id})')
+    else:
+        await bot.send_message(chat_report, f'{message.from_user.first_name} использовал {message.text} в '
+                                            f'в приватном чате(#{message.chat.id})')
+
+
+@dp.message_handler(commands=['gar', 'Gar', 'гар', 'Гар'])
+async def sendName(message: types.Message):
+    if message.reply_to_message:
+        membersName = message.reply_to_message.from_user.first_name
+    else:
+        membersName = message.from_user.first_name
+
+    try:
+        if not message.chat.type == 'private':
+            try:
+                await message.answer(send_name(chat_id=message.chat.id, name=membersName, trigger=message.text.split()[1]))
+            except MessageTextIsEmpty:
+                await message.answer('Такого триггера не существует.')
+        else:
+            await message.answer(f'🎻ʀᴇ|{membersName}🌅')
+    except IndexError:
+        if message.chat.type == 'private':
+            await message.answer(f'🎻ʀᴇ|{membersName}🌅')
+        else:
+            if (dfult := send_name(chat_id=message.chat.id, name=membersName, default=True,
+                                   trigger=0)) != 'Такого триггера не существует':
+                await message.answer(dfult)
+            else:
+                await message.answer(f'🎻ʀᴇ|{membersName}🌅')
 
     if not message.chat.title is None:
         await bot.send_message(chat_report, f'{message.from_user.first_name} использовал {message.text} в '
