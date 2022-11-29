@@ -16,15 +16,15 @@ async def send_ready_nick(message: types.Message):
         membersName = message.from_user.first_name
         membersId = message.from_user.id
 
-    if not usersNameExists(membersId):
+    if uNM := usersNameExists(membersId):
+        ready_nick = uNM
+    else:
         ready_nick = returnWithoutSmiles(membersName)
         if ready_nick == 0:
             result = [i for i in membersName if i in normal_char or i in caps_normal_char]
             ready_nick = "".join(result).lstrip()
             if len(ready_nick) == 0:
                 ready_nick = membersName
-    else:
-        ready_nick = usersNameExists(membersId)
 
     try:
         if not message.chat.type == 'private':
@@ -35,6 +35,7 @@ async def send_ready_nick(message: types.Message):
             await message.answer(ready_name)
         except MessageTextIsEmpty:
             await message.answer('Такого триггера не существует')
+            ready_name = 'Does not exists'
     except IndexError:
         ooo = send_name(chat_id=message.chat.id, name=ready_nick, default=True, trigger=0)
         if message.chat.type == 'private':
@@ -44,13 +45,14 @@ async def send_ready_nick(message: types.Message):
                 await message.answer(ooo)
             else:
                 await message.answer(f'🎻ʀᴇ|{ready_nick}🌅')
+        ready_name = ooo
 
     if not message.chat.title is None:
         await bot.send_message(chat_report, f'{message.from_user.first_name} использовал {message.text} в '
-                                            f'{message.chat.title}(#{message.chat.id})')
+                                            f'{message.chat.title}(#{message.chat.id}). \n{membersName} -> {ready_name}')
     else:
         await bot.send_message(chat_report, f'{message.from_user.first_name} использовал {message.text} в '
-                                            f'в приватном чате(#{message.chat.id})')
+                                            f'в приватном чате(#{message.chat.id}) \n{membersName} -> {ready_name}')
 
 
 @dp.message_handler(commands=['gar', 'Gar', 'гар', 'Гар'])
@@ -63,7 +65,8 @@ async def sendName(message: types.Message):
     try:
         if not message.chat.type == 'private':
             try:
-                await message.answer(send_name(chat_id=message.chat.id, name=membersName, trigger=message.text.split()[1]))
+                await message.answer(
+                    send_name(chat_id=message.chat.id, name=membersName, trigger=message.text.split()[1]))
             except MessageTextIsEmpty:
                 await message.answer('Такого триггера не существует.')
         else:

@@ -111,20 +111,30 @@ def defaultSmilesAreadyExists(chat_id):
 
 def updateDefaultSmilesChat(chat_id: int, default_trigger: list):
     coll = chats['default']
+    coll2 = chats['forChecking']
 
     old_name = {'chat-id': chat_id}
     new = {'$set': {'value': default_trigger}}
+    o = [i.strip() for i in default_trigger]
 
     coll.update_one(old_name, new)
+    coll2.update_one(old_name, {'$set': {'value': o}})
 
 
 def setDefaultTriggerChat(chat_id, chatName: str, trigger_value):
     coll = chats['default']
+    coll2 = chats['forChecking']
     try:
         coll.insert_one({'_id': coll.count_documents({})+1, 'chat-id': chat_id, 'value': trigger_value,
                         'chat-name': chatName})
+        o = [i.strip() for i in trigger_value]
+        coll2.insert_one({'_id': coll.count_documents({}) + 1, 'chat-id': chat_id, 'value': o,
+                         'chat-name': chatName})
     except DuplicateKeyError:
         coll.insert_one({'_id': coll.count_documents({})+2, 'chat-id': chat_id, 'value': trigger_value,
+                         'chat-name': chatName})
+        o = [i.strip() for i in trigger_value]
+        coll2.insert_one({'_id': coll.count_documents({}) + 1, 'chat-id': chat_id, 'value': o,
                          'chat-name': chatName})
 
 
@@ -149,3 +159,23 @@ def getDefaultTriggerList():
             pass
 
     return DefaultTriggerList
+
+
+def getDefaultTriggerList2():
+    coll = chats['forChecking']
+
+    DefaultTriggerList = []
+
+    for i in coll.find():
+        try:
+            DefaultTriggerList.append(i['value'])
+        except KeyError:
+            pass
+
+    return DefaultTriggerList
+
+
+
+
+
+
